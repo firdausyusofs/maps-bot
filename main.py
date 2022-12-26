@@ -64,6 +64,8 @@ for i in range(98):
         document.querySelector("#gb > div").hidden = true
         """)
 
+        # time.sleep(1)
+
         driver.save_screenshot(f"{count}.png")
         with open(f"{count}.txt", 'w') as f:
             f.write(f"{y},{x}")

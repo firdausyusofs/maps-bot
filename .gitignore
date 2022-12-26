@@ -1,3 +1,7 @@
 first_batch
 second_batch
+prev
+*.txt
+*.png
+*.zip
 .DS_Store
