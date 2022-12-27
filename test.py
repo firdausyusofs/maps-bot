@@ -10,15 +10,18 @@ from os.path import exists
 import datetime
 import os
 
+
 def datetime_range(start, end, delta):
     current = start
     while current <= end:
-yield current
+        yield current
         current += delta
+
 
 def create_dir(path):
     if not os.path.isdir(path):
         os.makedirs(path)
+
 
 diff_x = 0.0179815292
 diff_y = 0.009437118
@@ -45,6 +48,8 @@ end_time = datetime.datetime.now().replace(hour=22, minute=0, second=0, microsec
 time_range = [dt for dt in datetime_range(start_time, end_time, datetime.timedelta(minutes=interval))]
 
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
+time.sleep(5)
+
 wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-container"]/div[23]/div[1]/div[2]')))
 wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div')))
 wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div')))
@@ -119,30 +124,54 @@ for idx, day in enumerate(days):
 
         # Drag and screenshot
         count = 0
-        for i in range(45):
-            canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
-            width =  int(canvas_element.size['width'])
-            height = int(canvas_element.size["height"])
-            actions = ActionChains(driver)
-            
-            if i == 0:
-                save_screenshot(count, driver)
-                count = count + 1
-            else:
-                for k in range(2):
-                    actions.move_to_element(canvas_element).click_and_hold().move_by_offset(0, -height/2).release(canvas_element).perform()
-                save_screenshot(count, driver)
-                count = count + 1
+        if i % 2 == 0:
+            for j in range(45):
+                canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
+                width =  int(canvas_element.size['width'])
+                height = int(canvas_element.size["height"])
+                actions = ActionChains(driver)
+                
+                if j == 0:
+                    save_screenshot(count, driver)
+                    count = count + 1
+                else:
+                    for k in range(2):
+                        actions.move_to_element(canvas_element).click_and_hold().move_by_offset(0, -height/2).release(canvas_element).perform()
+                    save_screenshot(count, driver)
+                    count = count + 1
 
-            for j in range(20):
-                next_pos = width
-                if (i % 2) != 0:
+                for m in range(20):
+                    next_pos = width
+                    if (j % 2) != 0:
+                        next_pos = -width
+                    for k in range(2):
+                        actions.move_to_element(canvas_element).click_and_hold().move_by_offset(next_pos/2, 0).release(canvas_element).perform()
+                    save_screenshot(count, driver)
+                    count = count + 1
+        else:
+            for j in range(45):
+                canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
+                width =  int(canvas_element.size['width'])
+                height = int(canvas_element.size["height"])
+                actions = ActionChains(driver)
+
+                if j == 0:
+                    save_screenshot(count, driver)
+                    count = count + 1
+                else:
+                    for k in range(2):
+                        actions.move_to_element(canvas_element).click_and_hold().move_by_offset(0, height/2).release(canvas_element).perform()
+                    save_screenshot(count, driver)
+                    count = count + 1
+
+                for m in range(20):
                     next_pos = -width
-                for k in range(2):
-                    actions.move_to_element(canvas_element).click_and_hold().move_by_offset(next_pos/2, 0).release(canvas_element).perform()
-                save_screenshot(count, driver)
-                count = count + 1
-    
+                    if (j % 2) != 0:
+                        next_pos = width
+                    for k in range(2):
+                        actions.move_to_element(canvas_element).click_and_hold().move_by_offset(next_pos/2, 0).release(canvas_element).perform()
+                    save_screenshot(count, driver)
+                    count = count + 1
 
 driver.close()
 
