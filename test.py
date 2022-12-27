@@ -41,10 +41,10 @@ wait = WebDriverWait(driver=driver, timeout=20)
 map_initial_time = datetime.datetime.now().replace(hour=8, minute=55, second=0, microsecond=0)
 all_days = {'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4, 'Thursday': 5, 'Friday': 6, 'Saturday': 7}
 
-days = ["Monday", "Thursday", "Friday"]
-interval = 30
-start_time = datetime.datetime.now().replace(hour=6, minute=0, second=0, microsecond=0)
-end_time = datetime.datetime.now().replace(hour=22, minute=0, second=0, microsecond=0)
+days = ["Tuesday", "Saturday"]
+interval = 60
+start_time = datetime.datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
+end_time = datetime.datetime.now().replace(hour=21, minute=30, second=0, microsecond=0)
 time_range = [dt for dt in datetime_range(start_time, end_time, datetime.timedelta(minutes=interval))]
 
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
@@ -97,8 +97,8 @@ for idx, day in enumerate(days):
             var diff = 1.0666666667 * (
         '''
 
-        string += str(i)
-        string += ' * 5.277)'
+        string += str(i+0.5)
+        string += ' * (5.277*2))'
 
         string += '''
             var elem = document.querySelector("#layer > div > div > div > div > div.MtRpGc > div")
