@@ -185,6 +185,8 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
+        notifier.notify(f'Done: {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
+
     final_message = f'''
     Completed: {days[day]}
 
@@ -193,7 +195,7 @@ for idx, day in enumerate(days):
     for i, v in coordinates.items():
         final_message += f'''{i}: {v[0]} to {v[1]}\n'''
 
-    notifier.notify(final_message)
+    notifier.notify(final_message, True)
 
 driver.close()
 

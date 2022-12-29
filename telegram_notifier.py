@@ -16,13 +16,14 @@ class TelegramNotifier():
     def __init__(self):
         self.get_users()
 
-    def notify(self, message):
+    def notify(self, message, notify: bool = False):
         for i, v in enumerate(set(self.chat_ids)):
-            self.send_telegram_message(message, v)
+            self.send_telegram_message(message, v, notify)
 
     def send_telegram_message(self,
                               message: str,
-                              chat_id: str):
+                              chat_id: str,
+                              notify: bool = False):
         headers = {
             'Content-Type': 'application/json',
             'Proxy-Authorization': 'Basic base64'
@@ -31,7 +32,7 @@ class TelegramNotifier():
             'chat_id': chat_id,
             'text': message,
             'parse_mode': 'HTML',
-            'disable_notification': False
+            'disable_notification': notify
         }
 
         data = json.dumps(data_dict)
