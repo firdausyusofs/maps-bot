@@ -67,5 +67,8 @@ diff_cord_x = dest_x - orig_x
 row = math.ceil(diff_cord_y / diff_y)
 column = math.ceil(diff_cord_x / diff_x)
 
+print(diff_y)
 print(row)
+
+print(diff_x)
 print(column)
