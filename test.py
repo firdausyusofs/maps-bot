@@ -28,7 +28,7 @@ diff_x = 0.0179815292
 diff_y = 0.009437118
 
 orig_y = 2.5919824729117695
-orig_x = 101.055703
+orig_x = 101.05570
 zoom_level = 16
 
 notifier = TelegramNotifier()
@@ -44,8 +44,8 @@ wait = WebDriverWait(driver=driver, timeout=20)
 map_initial_time = datetime.datetime.now().replace(hour=8, minute=55, second=0, microsecond=0)
 all_days = {'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4, 'Thursday': 5, 'Friday': 6, 'Saturday': 7}
 
-days = ["Thursday"]
-interval = 30
+days = ["Wednesday"]
+interval = 60
 start_time = datetime.datetime.now().replace(hour=6, minute=0, second=0, microsecond=0)
 end_time = datetime.datetime.now().replace(hour=22, minute=0, second=0, microsecond=0)
 time_range = [dt for dt in datetime_range(start_time, end_time, datetime.timedelta(minutes=interval))]
@@ -70,6 +70,44 @@ driver.execute_script("""
 
 coordinates = {}
 
+def save_screenshot(count, driver):
+    driver.execute_script('''
+        if (document.getElementById('popup')) {
+            document.querySelector('#popup').remove()
+        }
+    ''')
+    time.sleep(1)
+    driver.save_screenshot(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.png")
+    url = driver.current_url
+    c = re.search("\d+((.|,)\d+),\d+((.|,)\d+)", url)
+    coord = c[0]
+    if count == 0:
+        coordinates[proper_formatted_time] = [coord]
+    elif count == 3:
+        coordinates[proper_formatted_time].append(coord)
+
+    with open(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.txt", 'w') as f:
+            f.write(coord)
+            f.close()
+
+fn = '''
+    function clickOnElem(elem, offsetX, offsetY) {
+        var rect = elem.getBoundingClientRect(),
+            posX = rect.left, posY = rect.top; // get elems coordinates
+        // calculate position of click
+        if (typeof offsetX == 'number') posX += offsetX;
+        else if (offsetX == 'center') {
+            posX += rect.width / 2;
+            if (offsetY == null) posY += rect.height / 2;
+        }
+        if (typeof offsetY == 'number') posY += offsetY;
+        // create event-object with calculated position
+        var evt = new MouseEvent('click', {bubbles: true, clientX: posX, clientY: posY});
+        elem.dispatchEvent(evt); // trigger the event on elem
+    }
+'''
+
+actions = ActionChains(driver)
 for idx, day in enumerate(days):
     create_dir('./images/'+day)
     driver.execute_script('''
@@ -77,35 +115,23 @@ for idx, day in enumerate(days):
     ''')
     wait.until(EC.presence_of_element_located((By.XPATH, f'//*[@id="layer"]/div/div/div/div/div[1]/div[1]/button[{all_days[day]}]'))).click()
     for i, dt in enumerate(time_range):
+        actions.release().perform()
         formatted_time = f'{dt.hour}_{dt.minute}'
         proper_formatted_time = dt.strftime("%H:%M")
-        notifier.notify("Running: " + proper_formatted_time)
+        notifier.notify(f"Running ({day}): {proper_formatted_time} ({1.0666666667 * (i * 5.277*2)})")
         create_dir('./images/'+day+'/'+formatted_time)
         driver.execute_script('''
             document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = false
         ''')
 
-        string = '''
-            function clickOnElem(elem, offsetX, offsetY) {
-                var rect = elem.getBoundingClientRect(),
-                    posX = rect.left, posY = rect.top; // get elems coordinates
-                // calculate position of click
-                if (typeof offsetX == 'number') posX += offsetX;
-                else if (offsetX == 'center') {
-                    posX += rect.width / 2;
-                    if (offsetY == null) posY += rect.height / 2;
-                }
-                if (typeof offsetY == 'number') posY += offsetY;
-                // create event-object with calculated position
-                var evt = new MouseEvent('click', {bubbles: true, clientX: posX, clientY: posY});
-                elem.dispatchEvent(evt); // trigger the event on elem
-            }
+        string = f'''
+            {fn}
 
             var diff = 1.0666666667 * (
         '''
 
         string += str(i)
-        string += ' * 5.277)'
+        string += ' * 5.277*2)'
 
         string += '''
             var elem = document.querySelector("#layer > div > div > div > div > div.MtRpGc > div")
@@ -119,29 +145,16 @@ for idx, day in enumerate(days):
             document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = true
         ''')
 
-        def save_screenshot(count, driver):
-            time.sleep(1)
-            driver.save_screenshot(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.png")
-            url = driver.current_url
-            c = re.search("\d+((.|,)\d+),\d+((.|,)\d+)", url)
-            coord = c[0]
-            if count == 0:
-                coordinates[proper_formatted_time] = [coord]
-            elif count == 989:
-                coordinates[proper_formatted_time].append(coord)
-
-            with open(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.txt", 'w') as f:
-                    f.write(coord)
-                    f.close()
-
         # Drag and screenshot
         count = 0
+
+        # Running for even index
         if i % 2 == 0:
-            for j in range(45):
+            # for j in range(49):
+            for j in range(1):
                 canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
                 width =  int(canvas_element.size['width'])
                 height = int(canvas_element.size["height"])
-                actions = ActionChains(driver)
                 
                 if j == 0:
                     save_screenshot(count, driver)
@@ -152,7 +165,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-                for m in range(21):
+                for m in range(2):
                     next_pos = width
                     if (j % 2) != 0:
                         next_pos = -width
@@ -160,12 +173,13 @@ for idx, day in enumerate(days):
                         actions.move_to_element(canvas_element).click_and_hold().move_by_offset(next_pos/2, 0).release(canvas_element).perform()
                     save_screenshot(count, driver)
                     count = count + 1
+
+        # Running for odd index
         else:
-            for j in range(45):
+            for j in range(1):
                 canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
                 width =  int(canvas_element.size['width'])
                 height = int(canvas_element.size["height"])
-                actions = ActionChains(driver)
 
                 if j == 0:
                     save_screenshot(count, driver)
@@ -176,7 +190,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-                for m in range(21):
+                for m in range(2):
                     next_pos = -width
                     if (j % 2) != 0:
                         next_pos = width
@@ -185,15 +199,15 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-        notifier.notify(f'Done: {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
+        notifier.notify(f'Done ({day}): {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
 
     final_message = f'''
-    Completed: {days[day]}
+        Completed: {day}
 
     '''
 
     for i, v in coordinates.items():
-        final_message += f'''{i}: {v[0]} to {v[1]}\n'''
+        final_message += f'{i}: {v[0]} to {v[1]}\n'
 
     notifier.notify(final_message, True)
 
