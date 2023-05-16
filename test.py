@@ -44,10 +44,10 @@ wait = WebDriverWait(driver=driver, timeout=20)
 map_initial_time = datetime.datetime.now().replace(hour=8, minute=55, second=0, microsecond=0)
 all_days = {'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4, 'Thursday': 5, 'Friday': 6, 'Saturday': 7}
 
-days = ["Wednesday"]
+days = ["Tuesday"]
 interval = 60
-start_time = datetime.datetime.now().replace(hour=6, minute=0, second=0, microsecond=0)
-end_time = datetime.datetime.now().replace(hour=22, minute=0, second=0, microsecond=0)
+start_time = datetime.datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
+end_time = datetime.datetime.now().replace(hour=21, minute=30, second=0, microsecond=0)
 time_range = [dt for dt in datetime_range(start_time, end_time, datetime.timedelta(minutes=interval))]
 
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
@@ -118,7 +118,7 @@ for idx, day in enumerate(days):
         actions.release().perform()
         formatted_time = f'{dt.hour}_{dt.minute}'
         proper_formatted_time = dt.strftime("%H:%M")
-        notifier.notify(f"Running ({day}): {proper_formatted_time} ({1.0666666667 * (i * 5.277*2)})")
+        # notifier.notify(f"Running ({day}): {proper_formatted_time} ({1.0666666667 * (i * 5.277*2)})")
         create_dir('./images/'+day+'/'+formatted_time)
         driver.execute_script('''
             document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = false
@@ -130,7 +130,7 @@ for idx, day in enumerate(days):
             var diff = 1.0666666667 * (
         '''
 
-        string += str(i)
+        string += str(i+0.5)
         string += ' * 5.277*2)'
 
         string += '''
@@ -141,9 +141,9 @@ for idx, day in enumerate(days):
 
         driver.execute_script(string)
 
-        driver.execute_script('''
-            document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = true
-        ''')
+        # driver.execute_script('''
+        #     document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = true
+        # ''')
 
         # Drag and screenshot
         count = 0
@@ -164,6 +164,8 @@ for idx, day in enumerate(days):
                         actions.move_to_element(canvas_element).click_and_hold().move_by_offset(0, -height/2).release(canvas_element).perform()
                     save_screenshot(count, driver)
                     count = count + 1
+
+                continue
 
                 for m in range(2):
                     next_pos = width
@@ -190,6 +192,8 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
+                continue
+
                 for m in range(2):
                     next_pos = -width
                     if (j % 2) != 0:
@@ -199,7 +203,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-        notifier.notify(f'Done ({day}): {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
+        # notifier.notify(f'Done ({day}): {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
 
     final_message = f'''
         Completed: {day}
@@ -209,7 +213,7 @@ for idx, day in enumerate(days):
     for i, v in coordinates.items():
         final_message += f'{i}: {v[0]} to {v[1]}\n'
 
-    notifier.notify(final_message, True)
+    # notifier.notify(final_message, True)
 
 driver.close()
 
