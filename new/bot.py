@@ -61,6 +61,8 @@ try:
         document.querySelector("#interactive-hovercard").remove()
     """)
 
+# 
+for idx, day in enumerate(days):
 
 except ValueError:
     print('Invalid coordinate')
