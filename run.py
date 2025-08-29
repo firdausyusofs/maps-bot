@@ -25,11 +25,11 @@ def create_dir(path):
         os.makedirs(path)
 
 
-diff_x = 0.03604885852999473
-diff_y = 0.019210837601999486
+diff_x = 0.04119870000000958
+diff_y = 0.01862190000000119
 
-orig_y = 4.441843062398
-orig_x = 100.92611254147
+orig_y = 10.269274
+orig_x = 123.721414
 zoom_level = 16
 
 notifier = TelegramNotifier()
@@ -47,21 +47,21 @@ wait = WebDriverWait(driver=driver, timeout=20)
 map_initial_time = datetime.datetime.now().replace(hour=8, minute=55, second=0, microsecond=0)
 all_days = {'Sunday': 1, 'Monday': 2, 'Tuesday': 3, 'Wednesday': 4, 'Thursday': 5, 'Friday': 6, 'Saturday': 7}
 
-days = ["Tuesday"]
+days = ["Sunday"]
 interval = 60
-start_time = datetime.datetime.now().replace(hour=6, minute=30, second=0, microsecond=0)
-end_time = datetime.datetime.now().replace(hour=21, minute=30, second=0, microsecond=0)
+start_time = datetime.datetime.now().replace(hour=6, minute=0, second=0, microsecond=0)
+end_time = datetime.datetime.now().replace(hour=22, minute=0, second=0, microsecond=0)
 time_range = [dt for dt in datetime_range(start_time, end_time, datetime.timedelta(minutes=interval))]
 
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
 time.sleep(5)
 
-wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-container"]/div[23]/div[1]/div')))
-wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div')))
-wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div')))
-live = driver.find_element(By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div').click()
+#wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-container"]/div[23]/div[1]/div')))
+#wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div')))
+#wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/span/span[1]/div')))
+live = driver.find_element(By.XPATH, '//*[@id="layer"]/div/div/span/span[1]/div').click()
 wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id=":1"]/div'))).click()
-wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/div/div[2]/div/div[1]/span[2]')))
+#wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/div/div[2]/div/div[1]/span[2]')))
 driver.execute_script("""
     document.querySelector("#omnibox-container").hidden = true
     document.querySelector("#content-container > div.scene-footer-container.Hk4XGb").hidden = true
@@ -116,7 +116,7 @@ for idx, day in enumerate(days):
     driver.execute_script('''
         document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = false
     ''')
-    wait.until(EC.presence_of_element_located((By.XPATH, f'//*[@id="layer"]/div/div/div/div/div[1]/div[1]/button[{all_days[day]}]'))).click()
+    wait.until(EC.presence_of_element_located((By.XPATH, f'//*[@id="layer"]/div/div/div/div[1]/div[1]/button[{all_days[day]}]'))).click()
     for i, dt in enumerate(time_range):
         actions.release().perform()
         formatted_time = f'{dt.hour}_{dt.minute}'
@@ -133,11 +133,11 @@ for idx, day in enumerate(days):
             var diff = 1.0666666667 * (
         '''
 
-        string += str(i+0.5)
+        string += str(i)
         string += ' * 5.277*2)'
 
         string += '''
-            var elem = document.querySelector("#layer > div > div > div > div > div.MtRpGc > div")
+            var elem = document.querySelector("#layer > div > div > div > div.MtRpGc > div > div.alivie > span.o3K2jf")
 
             clickOnElem(elem, diff, 0)
         '''
@@ -154,7 +154,7 @@ for idx, day in enumerate(days):
         # Running for even index
         if i % 2 == 0:
             # for j in range(49):
-            for j in range(1):
+            for j in range(13):
                 canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
                 width =  int(canvas_element.size['width'])
                 height = int(canvas_element.size["height"])
@@ -168,9 +168,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-                continue
-
-                for m in range(2):
+                for m in range(6):
                     next_pos = width
                     if (j % 2) != 0:
                         next_pos = -width
@@ -181,7 +179,7 @@ for idx, day in enumerate(days):
 
         # Running for odd index
         else:
-            for j in range(1):
+            for j in range(13):
                 canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
                 width =  int(canvas_element.size['width'])
                 height = int(canvas_element.size["height"])
@@ -195,9 +193,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-                continue
-
-                for m in range(2):
+                for m in range(6):
                     next_pos = -width
                     if (j % 2) != 0:
                         next_pos = width
