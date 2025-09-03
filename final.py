@@ -10,7 +10,6 @@ import re
 from os.path import exists
 import datetime
 import os
-#from telegram_notifier import TelegramNotifier
 
 
 def datetime_range(start, end, delta):
@@ -33,7 +32,7 @@ def save_screenshot(count, driver, day, formatted_time, proper_formatted_time):
         }
     ''')
     time.sleep(1)
-    driver.save_screenshot(f"./images2/{day}/{formatted_time}/{formatted_time}_{count}.png")
+    driver.save_screenshot(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.png")
     url = driver.current_url
     c = re.search("\\d+((.|,)\\d+),\\d+((.|,)\\d+)", url)
     if c == None:
@@ -44,7 +43,7 @@ def save_screenshot(count, driver, day, formatted_time, proper_formatted_time):
     elif count == 3:
         coordinates[proper_formatted_time].append(coord)
 
-    with open(f"./images2/{day}/{formatted_time}/{formatted_time}_{count}.txt", 'w') as f:
+    with open(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.txt", 'w') as f:
             f.write(coord)
             f.close()
 
@@ -89,9 +88,6 @@ driver.execute_script("""
     document.querySelector("#interactive-hovercard").remove()
 """)
 
-now = datetime.datetime.now()
-current_day = now.strftime("%A")
-
 actions = ActionChains(driver)
 driver.execute_script('''
     document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = true
@@ -99,12 +95,12 @@ driver.execute_script('''
 
 i = 0
 
-def run(i, now):
+def run(i, now, row, col):
     day = now.strftime("%A")
     formated_time = f"{now.hour}_{now.minute}"
     proper_formatted_time = now.strftime("%H:%M")
 
-    create_dir('./images2/'+day+'/'+formated_time)
+    create_dir('./images/'+day+'/'+formated_time)
 
     actions.release().perform()
 
@@ -118,7 +114,7 @@ def run(i, now):
     total_time = 0
 
     if i % 2 == 0:
-        for j in range(19):
+        for j in range(row):
             start_time = time.time()
             canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
             width =  int(canvas_element.size['width'])
@@ -133,7 +129,7 @@ def run(i, now):
                 save_screenshot(count, driver, day, formated_time, proper_formatted_time)
                 count = count + 1
 
-            for m in range(11):
+            for m in range(col):
                 next_pos = width
                 if (j % 2) != 0:
                     next_pos = -width
@@ -146,7 +142,7 @@ def run(i, now):
             total_time += (end_time - start_time)
             i = i + 1
     else:
-        for j in range(19):
+        for j in range(row):
             start_time = time.time()
             canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
             width =  int(canvas_element.size['width'])
@@ -161,7 +157,7 @@ def run(i, now):
                 save_screenshot(count, driver, day, formated_time, proper_formatted_time)
                 count = count + 1
 
-            for m in range(11):
+            for m in range(col):
                 next_pos = -width
                 if (j % 2) != 0:
                     next_pos = width
@@ -177,16 +173,15 @@ def run(i, now):
     # notifier.notify(f'Done ({day}): {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
     print(f'Total time for {day} {proper_formatted_time}: {total_time} seconds')
 
-    final_message = f'''
-        Completed: {day}
-
-    '''
-
-    for i, v in coordinates.items():
-        final_message += f'{i}: {v[0]} to {v[1]}\n'
-
-    # notifier.notify(final_message, True)
-
-run(i, now)
+now = datetime.datetime.now()
+is_running = False
+i = 0
+while True:
+    if not is_running:
+        is_running = True
+        run(i, now, 19, 11)
+        is_running = False
+    else:
+        time.sleep(60)
 
 driver.close()
