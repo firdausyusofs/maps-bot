@@ -20,12 +20,12 @@ service = Service('./chromedriver')
 driver = webdriver.Chrome(service=service, options=opts)
 wait = WebDriverWait(driver=driver, timeout=20)
 
-orig_y = 4.441843062398
-orig_x = 100.92611254147
-dest_y = 4.70018219998837
-dest_x = 101.226226305803
+orig_y = 10.269274
+orig_x = 123.721414
+dest_y = 10.493765
+dest_x = 123.957676
 
-zoom_level = 16
+zoom_level = 17
 
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
 
@@ -33,9 +33,9 @@ actions = ActionChains(driver)
 
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
 wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-container"]/div[23]/div[1]/div')))
-wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div')))
-wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div')))
-live = driver.find_element(By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div').click()
+#wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div')))
+# wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div')))
+# live = driver.find_element(By.XPATH, '//*[@id="layer"]/div/div/div/span/span[1]/div').click()
 # wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id=":1"]/div'))).click()
 # wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/div/div[2]/div/div[1]/span[2]')))
 
