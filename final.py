@@ -71,6 +71,15 @@ wait = WebDriverWait(driver=driver, timeout=20)
 driver.get(f"https://www.google.com/maps/@{orig_y},{orig_x},{zoom_level}z/data=!5m2!1e1!1e4")
 time.sleep(5)
 
+wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="QA0Szd"]/div/div/div/div[1]/ul/li[1]/button')))
+menu_button = driver.find_element(By.XPATH, '//*[@id="QA0Szd"]/div/div/div/div[1]/ul/li[1]/button')
+menu_button.click()
+
+wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="settings"]/div/div[2]/ul/div[3]/li/div/button')))
+driver.find_element(By.XPATH, '//*[@id="settings"]/div/div[2]/ul/div[3]/li/div/button').click()
+driver.find_element(By.XPATH, '//*[@id="settings"]/div/div[2]/ul/div[2]/button').click()
+
+
 driver.execute_script("""
     document.querySelector("#omnibox-container").hidden = true
     document.querySelector("#content-container > div.scene-footer-container.Hk4XGb").hidden = true
