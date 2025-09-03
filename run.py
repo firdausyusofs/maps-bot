@@ -30,7 +30,7 @@ diff_y = 0.01862190000000119
 
 orig_y = 10.269274
 orig_x = 123.721414
-zoom_level = 16
+zoom_level = 17
 
 #notifier = TelegramNotifier()
 
@@ -59,7 +59,7 @@ time.sleep(5)
 #wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="content-container"]/div[23]/div[1]/div')))
 #wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div')))
 #wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/span/span[1]/div')))
-live = driver.find_element(By.XPATH, '//*[@id="layer"]/div/div/span/span[1]/div').click()
+#live = driver.find_element(By.XPATH, '//*[@id="layer"]/div/div/span/span[1]/div').click()
 #wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id=":1"]/div'))).click()
 #wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="layer"]/div/div/div/div/div[2]/div/div[1]/span[2]')))
 driver.execute_script("""
@@ -116,7 +116,7 @@ for idx, day in enumerate(days):
     driver.execute_script('''
         document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = false
     ''')
-    wait.until(EC.presence_of_element_located((By.XPATH, f'//*[@id="layer"]/div/div/div/div[1]/div[1]/button[{all_days[day]}]'))).click()
+    # wait.until(EC.presence_of_element_located((By.XPATH, f'//*[@id="layer"]/div/div/div/div[1]/div[1]/button[{all_days[day]}]'))).click()
     for i, dt in enumerate(time_range):
         actions.release().perform()
         formatted_time = f'{dt.hour}_{dt.minute}'
@@ -142,7 +142,7 @@ for idx, day in enumerate(days):
             clickOnElem(elem, diff, 0)
         '''
 
-        driver.execute_script(string)
+        #driver.execute_script(string)
 
         driver.execute_script('''
             document.querySelector("#content-container > div.app-viewcard-strip.ZiieLd").hidden = true
@@ -151,10 +151,13 @@ for idx, day in enumerate(days):
         # Drag and screenshot
         count = 0
 
+        total_time = 0
+
         # Running for even index
         if i % 2 == 0:
             # for j in range(49):
-            for j in range(13):
+            for j in range(19):
+                start_time = time.time()
                 canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
                 width =  int(canvas_element.size['width'])
                 height = int(canvas_element.size["height"])
@@ -168,7 +171,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-                for m in range(6):
+                for m in range(11):
                     next_pos = width
                     if (j % 2) != 0:
                         next_pos = -width
@@ -176,10 +179,14 @@ for idx, day in enumerate(days):
                         actions.move_to_element(canvas_element).click_and_hold().move_by_offset(next_pos/2, 0).release(canvas_element).perform()
                     save_screenshot(count, driver)
                     count = count + 1
+                end_time = time.time()
+                print(f"Time taken for iteration {j} (even index): {end_time - start_time} seconds")
+                total_time += (end_time - start_time)
 
         # Running for odd index
         else:
-            for j in range(13):
+            for j in range(19):
+                start_time = time.time()
                 canvas_element = driver.find_element(By.XPATH, '//*[@id="scene"]/div[3]/canvas')
                 width =  int(canvas_element.size['width'])
                 height = int(canvas_element.size["height"])
@@ -193,7 +200,7 @@ for idx, day in enumerate(days):
                     save_screenshot(count, driver)
                     count = count + 1
 
-                for m in range(6):
+                for m in range(11):
                     next_pos = -width
                     if (j % 2) != 0:
                         next_pos = width
@@ -201,8 +208,12 @@ for idx, day in enumerate(days):
                         actions.move_to_element(canvas_element).click_and_hold().move_by_offset(next_pos/2, 0).release(canvas_element).perform()
                     save_screenshot(count, driver)
                     count = count + 1
+                end_time = time.time()
+                print(f"Time taken for iteration {j} (odd index): {end_time - start_time} seconds")
+                total_time += (end_time - start_time)
 
         # notifier.notify(f'Done ({day}): {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
+        print(f'Total time for {day} {proper_formatted_time}: {total_time} seconds')
 
     final_message = f'''
         Completed: {day}
