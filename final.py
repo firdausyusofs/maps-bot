@@ -25,14 +25,14 @@ def create_dir(path):
 
 coordinates = {}
 
-def save_screenshot(count, driver, day, formatted_time, proper_formatted_time):
+def save_screenshot(count, driver, day, formated_time, proper_formatted_time):
     driver.execute_script('''
         if (document.getElementById('popup')) {
             document.querySelector('#popup').remove()
         }
     ''')
     time.sleep(1)
-    driver.save_screenshot(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.png")
+    driver.save_screenshot(f"./images/{day}/{formated_time}/{formated_time}_{count}.png")
     url = driver.current_url
     c = re.search("\\d+((.|,)\\d+),\\d+((.|,)\\d+)", url)
     if c == None:
@@ -43,7 +43,7 @@ def save_screenshot(count, driver, day, formatted_time, proper_formatted_time):
     elif count == 3:
         coordinates[proper_formatted_time].append(coord)
 
-    with open(f"./images/{day}/{formatted_time}/{formatted_time}_{count}.txt", 'w') as f:
+    with open(f"./images/{day}/{formated_time}/{formated_time}_{count}.txt", 'w') as f:
             f.write(coord)
             f.close()
 
@@ -175,13 +175,7 @@ def run(i, now, row, col):
 
 is_running = False
 i = 0
-while True:
-    now = datetime.datetime.now()
-    if not is_running:
-        is_running = True
-        run(i, now, 19, 11)
-        is_running = False
-    else:
-        time.sleep(60)
+now = datetime.datetime.now()
+run(i, now, 19, 11)
 
 driver.close()
