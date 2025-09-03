@@ -173,10 +173,10 @@ def run(i, now, row, col):
     # notifier.notify(f'Done ({day}): {proper_formatted_time} - {coordinates[proper_formatted_time][0]} to {coordinates[proper_formatted_time][1]}')
     print(f'Total time for {day} {proper_formatted_time}: {total_time} seconds')
 
-now = datetime.datetime.now()
 is_running = False
 i = 0
 while True:
+    now = datetime.datetime.now()
     if not is_running:
         is_running = True
         run(i, now, 19, 11)
