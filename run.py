@@ -1,3 +1,4 @@
+
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ChromeOptions, ActionChains
@@ -226,4 +227,3 @@ for idx, day in enumerate(days):
     # notifier.notify(final_message, True)
 
 driver.close()
-
